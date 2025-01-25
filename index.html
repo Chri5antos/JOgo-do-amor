@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Início - Roleta do Amor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+            text-align: center;
+        }
+        h1 {
+            color: #4caf50;
+        }
+        p {
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+		#background-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>Bem-vindo à Roleta do Amor!</h1>
+        <p>Instruções:</p>
+        <p>
+            1. Clique no botão "Girar" para rodar a roleta.<br>
+            2. A roleta irá parar em uma das opções disponíveis.<br>
+            3. As opções incluem carinhos, massagens....<br>
+            4. Após cada seleção, a opção será removida da roleta.<br>
+            5. Um timer de 60 segundos será exibido antes de você poder girar novamente.
+        </p>
+        <button onclick="startGame()">Começar o Jogo</button>
+    </div>
+   <video autoplay muted loop id="background-video">
+        <source src="fundo.mp4" type="video/mp4">
+    <script>
+        function startGame() {
+            window.location.href = 'roleta.html'; // Redireciona para a página do jogo
+        }
+    </script>
+</body>
+</html>

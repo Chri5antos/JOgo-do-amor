@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roleta do Amor</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+        h1 {
+            color: #ff69b4;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .inputs-container {
+            margin-bottom: 20px;
+        }
+        label {
+            margin: 0 10px;
+            font-size: 1.2em;
+        }
+        input {
+            padding: 5px;
+            font-size: 1em;
+            border: 2px solid #ff69b4;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #ff1493;
+        }
+        .roleta-container {
+            position: relative;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .roleta {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            border: 5px solid #ddd;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.5s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+        }
+        .seta {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 20px solid red;
+            z-index: 10;
+        }
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 80%;
+            max-width: 600px;
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #ff69b4;
+            color: white;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #ff1493;
+        }
+        #timer {
+            font-size: 2em;
+            color: #ff1493;
+            margin-top: 20px;
+        }
+        #background-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        .roleta-opcao {
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Roleta do Amor👩‍❤️‍💋‍👨</h1>
+    <div class="inputs-container">
+        <label>🙍‍♂️Jogador 1: <input type="text" id="jogador1" placeholder="Nome do Jogador 1"></label>
+        <label>👩Jogador 2: <input type="text" id="jogador2" placeholder="Nome do Jogador 2"></label>
+    </div>
+    <div class="roleta-container">
+         <div class="seta"></div>
+        <div class="roleta" id="roleta">
+            <div class="roleta-opcao" id="roleta-opcao">🎲</div>
+        </div>
+    </div>
+    <button id="girar">💞Girar💞</button>
+    <div id="timer"></div>
+    <table>
+        <thead>
+            <tr>
+                <th>🔘Opção</th>
+                <th>👩‍❤️‍💋‍👨Jogador</th>
+                <th>⏳Tempo</th>
+            </tr>
+        </thead>
+        <tbody id="tabela"></tbody>
+    </table>
+    <video autoplay muted loop id="background-video">
+        <source src="fundo.mp4" type="video/mp4">
+    </video>
+    <script>
+        const somRoleta = new Audio('roleta-sound.mp3');
+
+        const opcoes = [
+            { nome: "Um Filme 🎥", vezes: 0, max: 2 },
+            { nome: "Massagem 💆", vezes: 0, max: 3 },
+            { nome: "Beijo 😘", vezes: 0, max: 3 },
+            { nome: "Quente 🔥", vezes: 0, max: 5 },
+            { nome: "Um Doce 🍭", vezes: 0, max: 4 },
+            { nome: "Um Salgado 🥨", vezes: 0, max: 4 },
+            { nome: "Uma Delícia 😋", vezes: 0, max: 2 },
+            { nome: "Uma música 🎵", vezes: 0, max: 1 },
+            { nome: "Um Apelido 🐣", vezes: 0, max: 2 },
+            { nome: "Uma tarefa ✍️", vezes: 0, max: 3 },
+            { nome: "Um Dia favorito 🌞", vezes: 0, max: 3 },
+            { nome: "Um Desejo 💫", vezes: 0, max: 2 }
+        ];
+
+        const opcaoCasamento = { nome: "Quer casar comigo? ⭐", vezes: 0, max: 1 };
+
+        const roletaOpcao = document.getElementById("roleta-opcao");
+        function escolherOpcao() {
+            let opcaoValida = false;
+            let indice;
+
+            while (!opcaoValida) {
+                indice = Math.floor(Math.random() * opcoes.length);
+                const opcao = opcoes[indice];
+
+                if (opcao.vezes < opcao.max) {
+                    opcaoValida = true;
+                }
+            }
+
+            const opcaoEscolhida = opcoes[indice];
+            opcaoEscolhida.vezes++;
+
+            if (duasOpcoesRestantes()) {
+                roletaOpcao.textContent = opcaoCasamento.nome;
+                adicionarNaTabela(opcaoCasamento.nome);
+            } else {
+                roletaOpcao.textContent = opcaoEscolhida.nome;
+                adicionarNaTabela(opcaoEscolhida.nome);
+            }
+
+            atualizarRoleta();
+            somRoleta.play(); // Tocar o som da roleta
+            iniciarTimer();
+        }
+
+        function duasOpcoesRestantes() {
+            return opcoes.filter(opcao => opcao.vezes < opcao.max).length === 2;
+        }
+
+        let jogadorAtual = 0;
+        let jogadores = [];
+        const tabela = document.getElementById("tabela");
+        const girarBtn = document.getElementById("girar");
+        const roleta = document.getElementById("roleta");
+        const timerDisplay = document.getElementById("timer");
+        let timerInterval;
+
+        function gerarGradiente() {
+            const cores = [
+                "pink", "lightblue", "lightcoral", "lightgreen", "lightyellow", "lightgoldenrodyellow"
+            ];
+            let gradiente = "conic-gradient(";
+            const opcoesRestantes = opcoes.filter(opcao => opcao.vezes < opcao.max);
+            const numOpcoes = opcoesRestantes.length;
+
+            for (let i = 0; i < numOpcoes; i++) {
+                const cor = cores[i % cores.length];
+                const porcentagem = (100 / numOpcoes);
+                const inicio = (i * porcentagem);
+                const fim = inicio + porcentagem;
+                gradiente += `${cor} ${inicio}% ${fim}%, `;
+            }
+
+            gradiente = gradiente.slice(0, -2) + ")";
+            return gradiente;
+        }
+
+        function atualizarRoleta() {
+            const opcoesRestantes = opcoes.filter(opcao => opcao.vezes < opcao.max);
+            if (opcoesRestantes.length > 0) {
+                roleta.style.background = gerarGradiente();
+            } else {
+                roleta.style.background = "white";
+            }
+        }
+
+        atualizarRoleta();
+
+        document.getElementById("girar").addEventListener("click", () => {
+            if (jogadores.length < 2) {
+                const j1 = document.getElementById("jogador1").value.trim();
+                const j2 = document.getElementById("jogador2").value.trim();
+                if (!j1 || !j2) {
+                    alert("Por favor, insira os nomes dos dois jogadores.");
+                    return;
+                }
+                jogadores = [j1, j2];
+            }
+
+            girarRoleta();
+        });
+
+        function girarRoleta() {
+            if (girarBtn.disabled) return;
+
+            girarBtn.disabled = true;
+            roleta.style.transition = 'transform 4s ease-out';
+            const randomDegree = Math.floor(Math.random() * 360) + 720;
+            roleta.style.transform = `rotate(${randomDegree}deg)`;
+
+            setTimeout(() => {
+                roleta.style.transition = 'none';
+                roleta.style.transform = `rotate(${randomDegree % 360}deg)`;
+                escolherOpcao();
+            }, 4000);
+        }
+
+        function adicionarNaTabela(opcao) {
+            const linha = tabela.insertRow();
+            linha.insertCell(0).textContent = opcao;
+            linha.insertCell(1).textContent = jogadores[jogadorAtual];
+            linha.insertCell(2).textContent = new Date().toLocaleTimeString();
+
+            jogadorAtual = (jogadorAtual + 1) % 2;
+        }
+
+        function iniciarTimer() {
+            let tempoRestante = 60; // Definindo o tempo inicial como 10 segundos
+            timerDisplay.textContent = `Tempo restante: ${tempoRestante}s`;
+            girarBtn.disabled = true;
+
+            timerInterval = setInterval(() => {
+                tempoRestante--;
+                timerDisplay.textContent = `Tempo restante: ${tempoRestante}s`;
+
+                if (tempoRestante <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = "Tempo esgotado!⏳";
+                    girarBtn.disabled = false;
+                }
+            }, 1000);
+        }
+
+        function todasEscolhidas() {
+            return opcoes.every((opcao) => opcao.vezes >= opcao.max);
+        }
+
+    </script>
+</body>
+</html>
